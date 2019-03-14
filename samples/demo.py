@@ -20,6 +20,8 @@ import time
 import pyinotify
 import shutil
 import imghdr
+import matplotlib.image as mpimg
+import json
 
 if len(sys.argv) >= 3:
     path = sys.argv[1]
@@ -37,9 +39,10 @@ sys.path.append(ROOT_DIR)  # To find local version of the library
 from mrcnn import utils
 import mrcnn.model as modellib
 from mrcnn import visualize
-# Import COCO config
-sys.path.append(os.path.join(ROOT_DIR, "samples/coco/"))  # To find local version
-import coco
+from mrcnn import fit
+# Import APPLE config
+sys.path.append(os.path.join(ROOT_DIR, "samples/apple/"))  # To find local version
+import apple
 
 # Directory to save logs and trained model
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
@@ -47,10 +50,10 @@ MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 # Path to trained weights file
 # Download this file and place in the root of your 
 # project (See README file for details)
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_balloon_0025.h5")
+COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_apple_20190225.h5")
 
 # Directory of images to run detection on
-IMAGE_DIR = os.path.join(ROOT_DIR, "images")
+IMAGE_DIR = os.path.join(ROOT_DIR, "images/AusTestPic")
 
 
 # ## Configurations
@@ -62,11 +65,12 @@ IMAGE_DIR = os.path.join(ROOT_DIR, "images")
 # In[2]:
 
 
-class InferenceConfig(coco.CocoConfig):
+class InferenceConfig(apple.AppleConfig):
     # Set batch size to 1 since we'll be running inference on
     # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
+    DETECTION_MIN_CONFIDENCE = 0.4
 
 config = InferenceConfig()
 config.display()
@@ -124,7 +128,7 @@ model.load_weights(COCO_MODEL_PATH, by_name=True)
 #                'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
 #                'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
 #                'teddy bear', 'hair drier', 'toothbrush']
-class_names = ['toothbrush']
+class_names = ['BG', 'apple']
 
 
 # ## Run Object Detection
@@ -143,16 +147,33 @@ wm = pyinotify.WatchManager()
 
 class MyEventHandler(pyinotify.ProcessEvent):
     def process_IN_CREATE(self, event):
-        print('filename:', event.name)
+        print(event)
         if imghdr.what(event.pathname) != None:
             image = skimage.io.imread(event.pathname)
             # Run detection
             results = model.detect([image], verbose=1)
             # Visualize results
             r = results[0]
-            print(r)
-            #visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], class_names, r['scores'])
-            visualize.save_instances(image, r['rois'], r['masks'], r['class_ids'], class_names, r['scores'], savepath=pathOutput + "/" + event.name)
+            
+            # depth img
+            # try:
+            # depthImg = mpimg.imread(event.pathname.replace("color","depth"))
+            # except
+            # return
+            
+            # test
+            height, width = image.shape[:2]
+            depthImg = np.random.random((height,width))/(2**16)*1000
+            
+            # intrinsics
+            try:
+                with open(event.pathname.replace("color","depth").replace("png","json")) as (f):
+                    intri = json.load(f)
+            except:
+                print("intrinsics file does not exist!!")
+                return
+#             fit.fit1(r['rois'], r['masks'],depthImg,intri)
+            fit.fit2(r['rois'], r['masks'],depthImg,intri)
 
 
 
