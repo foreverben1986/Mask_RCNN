@@ -19,6 +19,8 @@ import matplotlib.pyplot as plt
 from matplotlib import patches,  lines
 from matplotlib.patches import Polygon
 import IPython.display
+from mrcnn import appleFit
+import time
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
@@ -103,6 +105,7 @@ def display_instances(image, boxes, masks, class_ids, class_names,
         print("\n*** No instances to display *** \n")
     else:
         assert boxes.shape[0] == masks.shape[-1] == class_ids.shape[0]
+    print(time.time())
 
     # If no axis is passed, create one and automatically call show()
     auto_show = False
@@ -157,11 +160,30 @@ def display_instances(image, boxes, masks, class_ids, class_names,
             (mask.shape[0] + 2, mask.shape[1] + 2), dtype=np.uint8)
         padded_mask[1:-1, 1:-1] = mask
         contours = find_contours(padded_mask, 0.5)
+        circleDatas = appleFit.fit(padded_mask)
+#         if len(circleDatas) > 0:
+#         colorA = 0x0000ff
+#         k=0
+        for circleData in circleDatas:
+#             circleData = circleDatas[0]
+#             colorStrA = "#" + hex(colorA)[2:].zfill(6)
+#             if k==1:
+#                 break
+            circleRow = circleData[0][0] - 1
+            circleCol = circleData[0][1] - 1
+            if circleRow != -99:
+                ax.add_patch(patches.Circle((circleCol, circleRow), circleData[1], edgeColor='r', fill=False))
+                ax.scatter(circleCol, circleRow, edgeColor='r', s = 3)
+#             colorA+=100
+#             k+=1
+            break
         for verts in contours:
             # Subtract the padding and flip (y, x) to (x, y)
             verts = np.fliplr(verts) - 1
             p = Polygon(verts, facecolor="none", edgecolor=color)
             ax.add_patch(p)
+    
+    print(time.time())
     ax.imshow(masked_image.astype(np.uint8))
     if auto_show:
         plt.show()
