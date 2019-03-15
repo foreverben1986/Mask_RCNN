@@ -54,10 +54,10 @@ def maskArea(maskImg):
 def rs2DeprojectMask2Points(instri, mask, depthImg):
     depthImg = depthImg * 2**16 * instri["scale"]
     depthImg[mask==0] = 0
-    median = np.median(depthImg)
+    median = np.median(depthImg[depthImg>0])
     maxDepth = median + __DEPTH_BIAS__
     minDepth = median - __DEPTH_BIAS__
-    depthImg[(depthImg < minDepth) & (depthImg > maxDepth)] = 0
+    depthImg[(depthImg < minDepth) | (depthImg > maxDepth)] = 0
     xy = np.nonzero(depthImg)
     xs = np.array([])
     ys = np.array([])
