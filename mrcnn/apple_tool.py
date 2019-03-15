@@ -9,7 +9,7 @@ import os
 
 __DEPTH_MIN__ = 0.2
 __DEPTH_MAX__ = 3.
-__DEPTH_BIAS__ = 0.4 #meter
+__DEPTH_BIAS__ = 0.03 #meter
 
 def loadJson(path):
     with open(path) as f:
