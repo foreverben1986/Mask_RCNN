@@ -58,8 +58,8 @@ def fit1(boxes, masks, depthImg, intrinsics):
                 #TODO remove the failed x,y,z
                 result.append((x,y,z,radius/intrinsics["fx"]*meanDepths[i]))
         # if there is one result point to pick up, stop filter
-        if len(result) > 0:
-            break
+        # if len(result) > 0:
+        #     break
     if len(result) < 1:
         print("we need to go")
     else:
@@ -104,8 +104,8 @@ def fit2(boxes, masks, depthImg, intrinsics):
         result.append((x,y,z,radius))
         # TODO remove the failed x,y,z
         # output the 1st one
-        if len(result) > 0:
-            break
+        # if len(result) > 0:
+        #     break
 
     if len(result) < 1:
         print("we need to go")

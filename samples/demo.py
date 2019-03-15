@@ -156,14 +156,15 @@ class MyEventHandler(pyinotify.ProcessEvent):
             r = results[0]
             
             # depth img
-            # try:
-            # depthImg = mpimg.imread(event.pathname.replace("color","depth"))
-            # except
-            # return
+            try:
+                depthImg = mpimg.imread(event.pathname.replace("color","depth"))
+            except:
+                print("intrinsics file does not exist!!")
+                return
             
             # test
-            height, width = image.shape[:2]
-            depthImg = np.random.random((height,width))/(2**16)*1000
+            # height, width = image.shape[:2]
+            # depthImg = np.random.random((height,width))/(2**16)*1000
             
             # intrinsics
             try:
