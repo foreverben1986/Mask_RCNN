@@ -147,7 +147,9 @@ wm = pyinotify.WatchManager()
 
 class MyEventHandler(pyinotify.ProcessEvent):
     def process_IN_CREATE(self, event):
-        print(event)
+        if ("color_" not in event.pathname):
+            return
+        time.sleep(0.1)
         if imghdr.what(event.pathname) != None:
             image = skimage.io.imread(event.pathname)
             # Run detection
