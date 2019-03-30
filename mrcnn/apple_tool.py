@@ -9,7 +9,7 @@ import os
 
 __DEPTH_MIN__ = 0.2
 __DEPTH_MAX__ = 3.
-__DEPTH_BIAS__ = 0.03 #meter
+__DEPTH_BIAS__ = 0.02 #meter
 
 def loadJson(path):
     with open(path) as f:
@@ -21,10 +21,10 @@ xy: point(x, y)
 instri: intrinsics as json
 """
 def rs2DeprojectPixel2Point(instri, xy, depth):
-    x = (xy[0] - instri["ppx"])/instri["fx"]
-    y = (xy[1] - instri["ppy"])/instri["fy"]
+    x = (xy[0] - instri.ppx)/instri.fx
+    y = (xy[1] - instri.ppy)/instri.fy
     r2  = x*x + y*y
-    coeffs = instri["coeffs"]
+    coeffs = instri.coeffs
     f = 1 + coeffs[0]*r2 + coeffs[1]*r2*r2 + coeffs[4]*r2*r2*r2
     ux = x*f + 2*coeffs[2]*x*y + coeffs[3]*(r2 + 2*x*x)
     uy = y*f + 2*coeffs[3]*x*y + coeffs[2]*(r2 + 2*y*y)
@@ -51,8 +51,8 @@ maskImg: shape(x,y,instance_num)
 def maskArea(maskImg):
     return np.sum(maskImg, (0, 1))
 
-def rs2DeprojectMask2Points(instri, mask, depthImg):
-    depthImg = depthImg * 2**16 * instri["scale"]
+def rs2DeprojectMask2Points(instri, mask, depthImg, depth_scale=0.001):
+    depthImg = depthImg * 2**16 * depth_scale
     depthImg[mask==0] = 0
     median = np.median(depthImg[depthImg>0])
     maxDepth = median + __DEPTH_BIAS__

@@ -73,7 +73,7 @@ masks: [height, width, num_instances]
 depthImg: depth img
 intrinsics: intrinsics
 """
-def fit2(boxes, masks, depthImg, intrinsics):
+def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001):
     # Number of instances
     N = boxes.shape[0]
     if not N:
@@ -82,7 +82,7 @@ def fit2(boxes, masks, depthImg, intrinsics):
     else:
         assert boxes.shape[0] == masks.shape[-1]
     # meanDepths: [number_of_instances] 
-    meanDepths = atool.meanDepth(depthImg,masks,intrinsics["scale"])
+    meanDepths = atool.meanDepth(depthImg,masks,depth_scale)
     # area: [number_of_instances]
     maskAreas = atool.maskArea(masks)
     orders = sortMasks(meanDepths, maskAreas)
@@ -92,7 +92,7 @@ def fit2(boxes, masks, depthImg, intrinsics):
         # first circle
         mask = masks[:,:,i]
 
-        points = atool.rs2DeprojectMask2Points(intrinsics, mask, depthImg)
+        points = atool.rs2DeprojectMask2Points(intrinsics, mask, depthImg, depth_scale)
         if len(points[0]) > 150:
             (x,y,z), radius = sphereFit.fit(points)
         else:
@@ -100,8 +100,10 @@ def fit2(boxes, masks, depthImg, intrinsics):
                     ((np.mean(points[0]),\
                      np.mean(points[1]),\
                      np.mean(points[2])),\
-                     0)
-        result.append((x,y,z,radius))
+                     0.05)
+        # apple radius between 1cm and 9cm
+        if (radius > 0.01) & (radius < 0.09):
+            result.append((x,y,z,radius))
         # TODO remove the failed x,y,z
         # output the 1st one
         # if len(result) > 0:
@@ -110,9 +112,7 @@ def fit2(boxes, masks, depthImg, intrinsics):
     if len(result) < 1:
         print("we need to go")
     else:
-        print(result)
-        print(potinOutputPath)
-        atool.outputTarget(result, potinOutputPath)
+        return result
 
 
 """
