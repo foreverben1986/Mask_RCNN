@@ -12,10 +12,12 @@ sys.path.append(ROOT_DIR)  # To find local version of the library
 from librealsense import capture
 import model_load
 from mrcnn import fit
+from mrcnn import data_convert as dtcvt
 
 
 class S(BaseHTTPRequestHandler):
     blackList = []
+    currentPoint = None
     model = model_load.load_model()
     def _set_headers(self):
         self.send_response(200)
@@ -34,21 +36,21 @@ class S(BaseHTTPRequestHandler):
         # Visualize results
         r = results[0]
         apple_data = fit.fit2(r['rois'], r['masks'],depth_image,intrinsics)
-        print(apple_data)
+        currentPoint = apple_data
         if apple_data == None:
             self.wfile.write(bytes("", "utf-8"))
         else:
-            self.wfile.write(bytes(str(apple_data), "utf-8"))
+            apple_data_str = dtcvt.apple_data_to_str(apple_data)
+            self.wfile.write(bytes(str(apple_data_str), "utf-8"))
 
     def do_POST(self):
         self._set_headers()
         path,args=urllib.parse.splitquery(self.path)
-        print(path, args)
         # content_len = int(self.headers.getheader('content-length', 0))
         content_len = int(self.headers.get('Content-Length'))
         post_body = self.rfile.read(content_len)
-        self.blackList.append(post_body)
-        self.wfile.write(bytes(test, "utf-8"))
+        self.blackList.append(currentPoint)
+        self.wfile.write(bytes("200", "utf-8"))
 
     def do_HEAD(self):
         self._set_headers()

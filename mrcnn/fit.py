@@ -106,13 +106,13 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001):
             result.append((x,y,z,radius))
         # TODO remove the failed x,y,z
         # output the 1st one
-        # if len(result) > 0:
-        #     break
+        if len(result) > 0:
+            break
 
     if len(result) < 1:
         print("we need to go")
     else:
-        return result
+        return result[0]
 
 
 """
