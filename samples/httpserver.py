@@ -36,9 +36,9 @@ class S(BaseHTTPRequestHandler):
         apple_data = fit.fit2(r['rois'], r['masks'],depth_image,intrinsics)
         print(apple_data)
         if apple_data == None:
-            return ""
+            self.wfile.write(bytes("", "utf-8"))
         else:
-            return apple_data
+            self.wfile.write(bytes(str(apple_data), "utf-8"))
 
     def do_POST(self):
         self._set_headers()

@@ -10,7 +10,7 @@ ROOT_DIR = os.path.abspath("../")
 # Directory of images to run detection on
 IMAGE_DIR = os.path.join(ROOT_DIR, "apple_images")
 
-def capture():
+def capture(isSavePic=False):
     pipeline = rs.pipeline()
 
     config = rs.config()
@@ -55,6 +55,13 @@ def capture():
 
     pipeline.stop()
     
+    if isSavePic:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.imshow(color_image, origin="upper")
+        plt.savefig("test.png")
+        plt.show()
+    
 #     # test start
 #     depth_image = mpimg.imread(os.path.join(IMAGE_DIR, "depth_151553413886.png"))
 #     color_image = skimage.io.imread(os.path.join(IMAGE_DIR, "color_151553413886.png"))
@@ -62,8 +69,3 @@ def capture():
 #     print(depth_image[15,15])
 #     # test end
     return (color_image,depth_image,depth_scale,intrinsics)
-
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    # ax.imshow(color_image, origin="upper")
-    # plt.show()
