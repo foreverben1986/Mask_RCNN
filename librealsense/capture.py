@@ -50,8 +50,8 @@ def capture(isSavePic=False):
     depth_image = np.asanyarray(aligned_depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
     depth_image = 2**(-16) * depth_image
-    print(color_image[15,15,:])
-    print(depth_image[15,15])
+#     print(color_image[15,15,:])
+#     print(depth_image[15,15])
 
     pipeline.stop()
     
