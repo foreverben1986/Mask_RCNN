@@ -73,7 +73,7 @@ masks: [height, width, num_instances]
 depthImg: depth img
 intrinsics: intrinsics
 """
-def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001):
+def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[]):
     # Number of instances
     N = boxes.shape[0]
     if not N:
@@ -103,7 +103,8 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001):
                      0.05)
         # apple radius between 1cm and 9cm
         if (radius > 0.01) & (radius < 0.09):
-            result.append((x,y,z,radius))
+            if !atool.isInBlackList((x,y,z,radius), blackList):
+                result.append((x,y,z,radius))
         # TODO remove the failed x,y,z
         # output the 1st one
         if len(result) > 0:

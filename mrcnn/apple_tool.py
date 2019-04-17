@@ -1,4 +1,4 @@
-from mrcnn import appleFit
+import functools
 import numpy as np
 import matplotlib.pyplot as plt 
 import matplotlib.image as mpimg 
@@ -10,6 +10,7 @@ import os
 __DEPTH_MIN__ = 0.2
 __DEPTH_MAX__ = 3.
 __DEPTH_BIAS__ = 0.02 #meter
+__MIN_SPACE__ = 0.02 #meter
 
 def loadJson(path):
     with open(path) as f:
@@ -109,3 +110,28 @@ def outputTarget(result, path):
 # a = [(1,2,3),(3,2,1),(1,2,3)]
 # path = "./test_txt"
 # outputTarget(a, path)
+
+"""
+judge wether the target point belongs to any point in the blacklist.
+param:
+    targetPoint: (x, y, z)
+    blacklist: [(x, y, z)]
+"""
+def isInBlackList(targetPoint, blacklist):
+    isSameObjectPartial = functools.partial(isSameObject, targetPoint=targetPoint)
+    samePoints = list(filter(isSameObjectPartial, blacklist))
+    return len(samePoints) > 0
+
+"""
+judge wether the target point is the same point of the object point.
+param:
+    targetPoint: (x, y, z)
+    objectPoint: (x, y, z)
+"""
+def isSameObject(objectPoint, targetPoint):
+    diff = targetPoint[0] - objectPoint[0], \
+            targetPoint[1] - objectPoint[1],\
+            targetPoint[2] - objectPoint[2]
+    distance = (diff[0]**2 + diff[1]**2 + diff[2]**2)**0.5
+    return distance < __MIN_SPACE__
+    

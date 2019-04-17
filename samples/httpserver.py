@@ -13,6 +13,7 @@ from librealsense import capture
 import model_load
 from mrcnn import fit
 from mrcnn import data_convert as dtcvt
+from mrcnn import coordinates_change as cc
 
 
 class S(BaseHTTPRequestHandler):
@@ -35,13 +36,14 @@ class S(BaseHTTPRequestHandler):
         results = self.model.detect([color_image], verbose=1)
         # Visualize results
         r = results[0]
-        apple_data = fit.fit2(r['rois'], r['masks'],depth_image,intrinsics)
+        apple_data = fit.fit2(r['rois'], r['masks'],depth_image,intrinsics, blackList)
         currentPoint = apple_data
         if apple_data == None:
             self.wfile.write(bytes("", "utf-8"))
         else:
-            apple_data_str = dtcvt.apple_data_to_str(apple_data)
-            self.wfile.write(bytes(str(apple_data_str), "utf-8"))
+            apple_data_arm = cc.projectCamera2Arm(apple_data)
+            apple_data_arm_str = dtcvt.apple_data_to_str(apple_data_arm)
+            self.wfile.write(bytes(str(apple_data_arm_str), "utf-8"))
 
     def do_POST(self):
         self._set_headers()
