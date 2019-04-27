@@ -103,7 +103,7 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[]):
                      0.05)
         # apple radius between 1cm and 9cm
         if (radius > 0.01) & (radius < 0.09):
-            if !atool.isInBlackList((x,y,z,radius), blackList):
+            if not atool.isInBlackList((x,y,z,radius), blackList):
                 result.append((x,y,z,radius))
         # TODO remove the failed x,y,z
         # output the 1st one
