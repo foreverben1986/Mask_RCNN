@@ -3,11 +3,14 @@ from mrcnn import appleFit
 import numpy as np
 import os
 from mrcnn import sphereFit
+from mrcnn import coordinates_change as cdc
 
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
 potinOutputPath = os.path.join(ROOT_DIR, "targets")
+
+__X_Y_RANGE__ = {"xmin":0, "ymin":0, "xmax":2, "ymax":2}
 
 """
 use circle fit to fit the mask image
@@ -73,7 +76,7 @@ masks: [height, width, num_instances]
 depthImg: depth img
 intrinsics: intrinsics
 """
-def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[]):
+def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], current_point=(0,0,0)):
     # Number of instances
     N = boxes.shape[0]
     if not N:
@@ -96,16 +99,20 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[]):
         if len(points[0]) > 150:
             (x,y,z), radius = sphereFit.fit(points)
         else:
+            print("the number of pixel of the apple is no more than 150...")
             (x,y,z), radius = \
                     ((np.mean(points[0]),\
                      np.mean(points[1]),\
                      np.mean(points[2])),\
                      0.05)
-        # apple radius between 1cm and 9cm
-        if (radius > 0.01) & (radius < 0.09):
-            if not atool.isInBlackList((x,y,z,radius), blackList):
+        # change the coordinates from camera to arms
+        x,y,z,radius = cdc.projectCamera2Arm((x,y,z,radius))
+        
+        # apple radius between 1cm and 9cm & 
+        # remove the failed x,y,z
+        if (radius > 0.01) & (radius < 0.09) & isInRange((x,y,z), current_point):
+            if not atool.isInBlackList(cdc.coordinateMerge((x,y,z), current_point), blackList):
                 result.append((x,y,z,radius))
-        # TODO remove the failed x,y,z
         # output the 1st one
         if len(result) > 0:
             break
@@ -115,6 +122,14 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[]):
     else:
         return result[0]
 
+
+def isInRange(relative_point, current_point):
+    point = (current_point[0] + relative_point[0], \
+             current_point[1] + relative_point[1], \
+             current_point[2] + relative_point[2], \
+            )
+    return (point[0] > __X_Y_RANGE__["xmin"]) & (point[0] > __X_Y_RANGE__["xmax"]) \
+        & (point[1] > __X_Y_RANGE__["ymin"]) & (point[1] > __X_Y_RANGE__["ymax"])
 
 """
 meanDepth: [number_of_instances]
