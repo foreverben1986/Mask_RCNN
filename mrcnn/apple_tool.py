@@ -22,24 +22,24 @@ xy: point(x, y)
 instri: intrinsics as json
 """
 def rs2DeprojectPixel2Point(instri, xy, depth):
-#     x = (xy[0] - instri.ppx)/instri.fx
-#     y = (xy[1] - instri.ppy)/instri.fy
-#     r2  = x*x + y*y
-#     coeffs = instri.coeffs
-#     f = 1 + coeffs[0]*r2 + coeffs[1]*r2*r2 + coeffs[4]*r2*r2*r2
-#     ux = x*f + 2*coeffs[2]*x*y + coeffs[3]*(r2 + 2*x*x)
-#     uy = y*f + 2*coeffs[3]*x*y + coeffs[2]*(r2 + 2*y*y)
-#     x = ux
-#     y = uy
-    x = (xy[0] - instri['ppx'])/instri['fx']
-    y = (xy[1] - instri['ppy'])/instri['fy']
+    x = (xy[0] - instri.ppx)/instri.fx
+    y = (xy[1] - instri.ppy)/instri.fy
     r2  = x*x + y*y
-    coeffs = instri['coeffs']
+    coeffs = instri.coeffs
     f = 1 + coeffs[0]*r2 + coeffs[1]*r2*r2 + coeffs[4]*r2*r2*r2
     ux = x*f + 2*coeffs[2]*x*y + coeffs[3]*(r2 + 2*x*x)
     uy = y*f + 2*coeffs[3]*x*y + coeffs[2]*(r2 + 2*y*y)
     x = ux
     y = uy
+#     x = (xy[0] - instri['ppx'])/instri['fx']
+#     y = (xy[1] - instri['ppy'])/instri['fy']
+#     r2  = x*x + y*y
+#     coeffs = instri['coeffs']
+#     f = 1 + coeffs[0]*r2 + coeffs[1]*r2*r2 + coeffs[4]*r2*r2*r2
+#     ux = x*f + 2*coeffs[2]*x*y + coeffs[3]*(r2 + 2*x*x)
+#     uy = y*f + 2*coeffs[3]*x*y + coeffs[2]*(r2 + 2*y*y)
+#     x = ux
+#     y = uy
     return (depth*x, -depth*y, depth)
 
 """

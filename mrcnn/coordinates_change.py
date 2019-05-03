@@ -84,4 +84,10 @@ def biasInDepth(z):
 def coordinateMerge(relativePoint, machinePoint):
     return (relativePoint[0] + machinePoint[0], \
             relativePoint[1] + machinePoint[1], \
-            relativePoint[2] + machinePoint[2])
+            relativePoint[2])
+
+
+def coordinateMergeZ(relativePoint, machinePoint):
+    return (machinePoint[0], \
+            machinePoint[1], \
+            relativePoint[2])

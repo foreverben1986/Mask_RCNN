@@ -10,7 +10,7 @@ from mrcnn import coordinates_change as cdc
 ROOT_DIR = os.path.abspath("../")
 potinOutputPath = os.path.join(ROOT_DIR, "targets")
 
-__X_Y_RANGE__ = {"xmin":0, "ymin":0, "xmax":2, "ymax":2}
+__X_Y_Z_RANGE__ = {"xmin":0, "ymin":0, "xmax":2, "ymax":2, "zmin":0, "zmax":1.280}
 
 """
 use circle fit to fit the mask image
@@ -106,6 +106,8 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
                      np.mean(points[2])),\
                      0.05)
         # change the coordinates from camera to arms
+        
+        print("apple in camera system is at ", (x,y,z, radius))
         x,y,z,radius = cdc.projectCamera2Arm((x,y,z,radius))
         
         # apple radius between 1cm and 9cm & 
@@ -126,10 +128,11 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
 def isInRange(relative_point, current_point):
     point = (current_point[0] + relative_point[0], \
              current_point[1] + relative_point[1], \
-             current_point[2] + relative_point[2], \
+             relative_point[2], \
             )
-    return (point[0] > __X_Y_RANGE__["xmin"]) & (point[0] > __X_Y_RANGE__["xmax"]) \
-        & (point[1] > __X_Y_RANGE__["ymin"]) & (point[1] > __X_Y_RANGE__["ymax"])
+    return (point[0] > __X_Y_Z_RANGE__["xmin"]) & (point[0] < __X_Y_Z_RANGE__["xmax"]) \
+        & (point[1] > __X_Y_Z_RANGE__["ymin"]) & (point[1] < __X_Y_Z_RANGE__["ymax"]) \
+        & (point[2] > __X_Y_Z_RANGE__["zmin"]) & (point[2] < __X_Y_Z_RANGE__["zmax"])
 
 """
 meanDepth: [number_of_instances]
