@@ -1,0 +1,3 @@
+2019-05-06 12:13:03,592 - root - DEBUG - This message should go to the log file
+2019-05-06 12:13:03,592 - root - INFO - So should this
+2019-05-06 12:13:03,592 - root - WARNING - And this, too

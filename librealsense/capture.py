@@ -5,6 +5,7 @@ import matplotlib.image as mpimg
 import matplotlib.patches as patches
 import os
 import skimage.io
+import datetime
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
 # Directory of images to run detection on
@@ -56,10 +57,22 @@ def capture(isSavePic=False):
     pipeline.stop()
     
     if isSavePic:
+        
+        PNG_DIR = os.path.join(ROOT_DIR, "logs")
+        file_name = "color_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
+        pngFilePath = os.path.join(PNG_DIR, file_name)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.imshow(depth_image, origin="upper", cmap=plt.cm.gray)
+        plt.savefig(pngFilePath.replace("color","depth"))
+#         plt.show()
+        
+        plt.clf()
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.imshow(color_image, origin="upper")
-        plt.savefig("test.png")
+        plt.savefig(pngFilePath)
         plt.show()
     
 #     # test start

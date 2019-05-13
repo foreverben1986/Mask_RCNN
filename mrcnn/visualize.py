@@ -21,6 +21,7 @@ from matplotlib.patches import Polygon
 import IPython.display
 from mrcnn import appleFit
 import time
+import logging
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
@@ -183,7 +184,6 @@ def display_instances(image, boxes, masks, class_ids, class_names,
             p = Polygon(verts, facecolor="none", edgecolor=color)
             ax.add_patch(p)
     
-    print(time.time())
     ax.imshow(masked_image.astype(np.uint8))
     if auto_show:
         plt.show()
