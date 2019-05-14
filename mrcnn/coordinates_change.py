@@ -2,7 +2,7 @@ import numpy as np
 
 __X_BIAS__ = 0.0693
 __Y_BIAS__ = 0.220
-__Z_BIAS__ = 0.118 
+__Z_BIAS__ = 0.138 
 __CAMERA_MATRIX__ = np.array([ \
     [1,0,0], \
     [0,1,0], \
