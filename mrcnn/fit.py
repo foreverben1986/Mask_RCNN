@@ -4,6 +4,7 @@ import numpy as np
 import os
 from mrcnn import sphereFit
 from mrcnn import coordinates_change as cdc
+import logging
 
 
 # Root directory of the project
@@ -99,15 +100,14 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
         if len(points[0]) > 150:
             (x,y,z), radius = sphereFit.fit(points)
         else:
-            print("the number of pixel of the apple is no more than 150...")
+            logging.debug("the number of pixel of the apple is no more than 150...")
             (x,y,z), radius = \
                     ((np.mean(points[0]),\
                      np.mean(points[1]),\
                      np.mean(points[2])),\
                      0.05)
         # change the coordinates from camera to arms
-        
-        print("apple in camera system is at ", (x,y,z, radius))
+        logging.debug("apple in camera system is at %s.", (x,y,z, radius))
         x,y,z,radius = cdc.projectCamera2Arm((x,y,z,radius))
         
         # apple radius between 1cm and 9cm & 
@@ -115,6 +115,8 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
         if (radius > 0.01) & (radius < 0.09) & isInRange((x,y,z), current_point):
             if not atool.isInBlackList(cdc.coordinateMerge((x,y,z), current_point), blackList):
                 result.append((x,y,z,radius))
+            else:
+                logging.debug("apple is in black list.")
         # output the 1st one
         if len(result) > 0:
             break

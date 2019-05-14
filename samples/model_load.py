@@ -62,7 +62,7 @@ def load_model():
         # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
         GPU_COUNT = 1
         IMAGES_PER_GPU = 1
-        DETECTION_MIN_CONFIDENCE = 0.4
+        DETECTION_MIN_CONFIDENCE = 0.9
 
     config = InferenceConfig()
 

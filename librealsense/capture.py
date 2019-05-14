@@ -6,6 +6,7 @@ import matplotlib.patches as patches
 import os
 import skimage.io
 import datetime
+import cv2
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../")
 # Directory of images to run detection on
@@ -50,7 +51,7 @@ def capture(isSavePic=False):
 
     depth_image = np.asanyarray(aligned_depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
-    depth_image = 2**(-16) * depth_image
+    depth_image2 = 2**(-16) * depth_image
 #     print(color_image[15,15,:])
 #     print(depth_image[15,15])
 
@@ -62,18 +63,11 @@ def capture(isSavePic=False):
         file_name = "color_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
         pngFilePath = os.path.join(PNG_DIR, file_name)
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.imshow(depth_image, origin="upper", cmap=plt.cm.gray)
-        plt.savefig(pngFilePath.replace("color","depth"))
-#         plt.show()
+        cv_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(pngFilePath, cv_image)
+        cv2.imwrite(pngFilePath.replace("color","depth"), depth_image)
         
-        plt.clf()
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.imshow(color_image, origin="upper")
-        plt.savefig(pngFilePath)
-        plt.show()
+#         np.savetxt(pngFilePath.replace("color","depth").replace(".png",""), depth_image)
     
 #     # test start
 #     depth_image = mpimg.imread(os.path.join(IMAGE_DIR, "depth_151553413886.png"))
@@ -81,4 +75,4 @@ def capture(isSavePic=False):
 #     print(color_image[15,15,:])
 #     print(depth_image[15,15])
 #     # test end
-    return (color_image,depth_image,depth_scale,intrinsics)
+    return (color_image,depth_image2,depth_scale,intrinsics,file_name)
