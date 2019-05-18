@@ -34,6 +34,7 @@ class S(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        logging.debug("+++++++++++++++++++++++++++++++++++++++++++++")
         self._set_headers()
         path,args=urllib.parse.splitquery(self.path)
 #         if len(self.blackList) > 0:
@@ -64,8 +65,10 @@ class S(BaseHTTPRequestHandler):
         else:
             S.blackList=[]
             self.wfile.write(bytes("200", "utf-8"))
+        logging.debug("+++++++++++++++++++++++++++++++++++++++++++++")
 
     def do_POST(self):
+        logging.debug("----------------------------------------------")
         self._set_headers()
         path,args=urllib.parse.splitquery(self.path)
         # content_len = int(self.headers.getheader('content-length', 0))
@@ -78,6 +81,7 @@ class S(BaseHTTPRequestHandler):
         if path.find("black_point") != -1:
             self.blackList.append(cc.coordinateMergeZ(S.currentPoint, S.machine_location))
         self.wfile.write(bytes("200", "utf-8"))
+        logging.debug("----------------------------------------------")
 
     def do_HEAD(self):
         self._set_headers()

@@ -6,6 +6,9 @@ import matplotlib.patches as patches
 import time
 import json
 import os
+import logging
+
+from mrcnn import coordinates_change as cdc
 
 __DEPTH_MIN__ = 0.2
 __DEPTH_MAX__ = 3.
@@ -22,6 +25,9 @@ xy: point(x, y)
 instri: intrinsics as json
 """
 def rs2DeprojectPixel2Point(instri, xy, depth):
+    # TODO
+    depth = cdc.biasInDepth(depth)
+    # TODO
     x = (xy[0] - instri.ppx)/instri.fx
     y = (xy[1] - instri.ppy)/instri.fy
     r2  = x*x + y*y
@@ -67,6 +73,10 @@ def rs2DeprojectMask2Points(instri, mask, depthImg, depth_scale=0.001):
     median = np.median(depthImg[depthImg>0])
     maxDepth = median + __DEPTH_BIAS__
     minDepth = median - __DEPTH_BIAS__
+    print("maxDepth:", maxDepth)
+    print("minDepth:", minDepth)
+    logging.debug("maxDepth is %s", maxDepth)
+    logging.debug("minDepth is %s", minDepth)
     depthImg[(depthImg < minDepth) | (depthImg > maxDepth)] = 0
     xy = np.nonzero(depthImg)
     xs = np.array([])

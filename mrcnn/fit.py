@@ -11,7 +11,7 @@ import logging
 ROOT_DIR = os.path.abspath("../")
 potinOutputPath = os.path.join(ROOT_DIR, "targets")
 
-__X_Y_Z_RANGE__ = {"xmin":0, "ymin":0, "xmax":2, "ymax":2, "zmin":0, "zmax":1.280}
+__X_Y_Z_RANGE__ = {"xmin":0, "ymin":0, "xmax":0.6, "ymax":0.320, "zmin":0, "zmax":1.200}
 
 """
 use circle fit to fit the mask image
@@ -112,11 +112,15 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
         
         # apple radius between 1cm and 9cm & 
         # remove the failed x,y,z
+#         if (radius > 0.01) & (radius < 0.09) & isInRange((x,y,z), current_point):
         if (radius > 0.01) & (radius < 0.09) & isInRange((x,y,z), current_point):
             if not atool.isInBlackList(cdc.coordinateMerge((x,y,z), current_point), blackList):
                 result.append((x,y,z,radius))
             else:
                 logging.debug("apple is in black list.")
+        else:
+            logging.debug("apple is out of range.")
+            
         # output the 1st one
         if len(result) > 0:
             break
@@ -128,10 +132,12 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
 
 
 def isInRange(relative_point, current_point):
+    logging.debug("current_point is at %s.", current_point)
     point = (current_point[0] + relative_point[0], \
              current_point[1] + relative_point[1], \
              relative_point[2], \
             )
+    logging.debug("pick point is at %s.", point)
     return (point[0] > __X_Y_Z_RANGE__["xmin"]) & (point[0] < __X_Y_Z_RANGE__["xmax"]) \
         & (point[1] > __X_Y_Z_RANGE__["ymin"]) & (point[1] < __X_Y_Z_RANGE__["ymax"]) \
         & (point[2] > __X_Y_Z_RANGE__["zmin"]) & (point[2] < __X_Y_Z_RANGE__["zmax"])

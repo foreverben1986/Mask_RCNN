@@ -2,7 +2,8 @@ import numpy as np
 
 __X_BIAS__ = 0.0693
 __Y_BIAS__ = 0.220
-__Z_BIAS__ = 0.138 
+# __Z_BIAS__ = 0.158 
+__Z_BIAS__ = 0.108
 __CAMERA_MATRIX__ = np.array([ \
     [1,0,0], \
     [0,1,0], \
@@ -67,7 +68,8 @@ def projectCamera2Arm(data):
     coord = np.dot(__TRANSITION_MATRIX__, coord)
     coord = coord[0:3, :]
     print(coord)
-    return (coord[0,0],coord[1,0],biasInDepth(coord[2,0]),data[3])
+#     return (coord[0,0],coord[1,0],biasInDepth(coord[2,0]),data[3])
+    return (coord[0,0],coord[1,0],coord[2,0],data[3])
 
 def biasInDepth(z):
     if z > 1.1:
