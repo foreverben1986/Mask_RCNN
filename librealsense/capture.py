@@ -48,7 +48,7 @@ def capture(isSavePic=False):
     aligned_depth_median = None
     frames_list = []
     
-    for i in range(1):
+    for i in range(10):
         # Get frameset of color and depth
         frames = pipeline.wait_for_frames()
         # frames.get_depth_frame() is a 640x360 depth image

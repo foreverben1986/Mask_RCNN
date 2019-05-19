@@ -108,12 +108,13 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
                      0.05)
         # change the coordinates from camera to arms
         logging.debug("apple in camera system is at %s.", (x,y,z, radius))
-        x,y,z,radius = cdc.projectCamera2Arm((x,y,z,radius))
+#         x,y,z,radius = cdc.projectCamera2Arm((x,y,z,radius))
+        x,y,z,radius = cdc.projectCoord((x,y,z,radius), current_point)
         
         # apple radius between 1cm and 9cm & 
         # remove the failed x,y,z
 #         if (radius > 0.01) & (radius < 0.09) & isInRange((x,y,z), current_point):
-        if (radius > 0.01) & (radius < 0.09) & isInRange((x,y,z), current_point):
+        if isInRange((x,y,z), current_point):
             if not atool.isInBlackList(cdc.coordinateMerge((x,y,z), current_point), blackList):
                 result.append((x,y,z,radius))
             else:

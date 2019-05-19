@@ -25,8 +25,9 @@ xy: point(x, y)
 instri: intrinsics as json
 """
 def rs2DeprojectPixel2Point(instri, xy, depth):
+#     logging.debug("pixels point are %s", xy)
     # TODO
-    depth = cdc.biasInDepth(depth)
+#     depth = cdc.biasInDepth(depth)
     # TODO
     x = (xy[0] - instri.ppx)/instri.fx
     y = (xy[1] - instri.ppy)/instri.fy
