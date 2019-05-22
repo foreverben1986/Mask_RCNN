@@ -19,9 +19,12 @@ __CAMERA2_MATRIX__ = np.array([ \
 """
 30 degrees camera biases in horizon camera
 """
-__X_BIAS_2__ = 0.005
+#Temp modify. To recover in funture
+# __X_BIAS_2__ = 0.005
+__X_BIAS_2__ = -0.005
 __Y_BIAS_2__ = -0.650
-__Z_BIAS_2__ = 0.08
+# __Z_BIAS_2__ = 0.08
+__Z_BIAS_2__ = 0.03
 
 
 """
@@ -79,7 +82,8 @@ __Y_BIAS__ = y
 def projectCamera2_2_camera(data, current_point):
     __TRANSITION_MATRIX_2__ = np.array([ \
         [1,0,0,-__X_BIAS_2__], \
-        [0,1,0,-(__Y_BIAS_2__ + current_point[1])], \
+#         [0,1,0,-(__Y_BIAS_2__ + current_point[1])], \
+        [0,1,0,-__Y_BIAS_2__], \
         [0,0,1,-__Z_BIAS_2__], \
         [0,0,0,1]])
     coord = np.array([data[0], data[1], data[2], 1]).reshape(4,1)

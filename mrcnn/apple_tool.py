@@ -72,6 +72,7 @@ def rs2DeprojectMask2Points(instri, mask, depthImg, depth_scale=0.001):
     depthImg = depthImg * 2**16 * depth_scale
     depthImg[mask==0] = 0
     median = np.median(depthImg[depthImg>0])
+    logging.debug("median is %s", median)
     maxDepth = median + __DEPTH_BIAS__
     minDepth = median - __DEPTH_BIAS__
     print("maxDepth:", maxDepth)

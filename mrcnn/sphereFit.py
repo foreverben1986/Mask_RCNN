@@ -13,7 +13,13 @@ def fit(points):
 
     def calc_R(xc, yc, zc):
         """ calculate the distance of each 3D points from the center (xc, yc) """
-        return np.sqrt((x-xc)**2 + (y-yc)**2 + (z-zc)**2)
+        radius = (x-xc)**2 + (y-yc)**2 + (z-zc)**2
+        print("----------------------")
+        print("radius:", radius.shape)
+        print("radius:", radius)
+        print("----------------------")
+        radius = np.where(radius>0.06**2, radius*1000000, radius)
+        return np.sqrt(radius)
 
 
     def f_3(c):

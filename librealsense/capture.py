@@ -13,6 +13,25 @@ ROOT_DIR = os.path.abspath("../")
 # Directory of images to run detection on
 IMAGE_DIR = os.path.join(ROOT_DIR, "apple_images")
 
+"""
+color_image: RGB
+"""
+def filterColor(color_image):
+    mat1 = color_image[:,:,1] > 100
+    # mat2 = image[:,:,0] > 0
+#     mat3 = image[:,:,0] > 100
+    color_image[mat1] = [0,0,0]
+    return color_image
+
+def filterColor2(color_image):
+    handled_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2HSV)
+
+    mask1 = cv2.inRange(handled_image, (0,0,0), (10,255,255))
+    mask2 = cv2.inRange(handled_image, (120,0,0), (180,255,255))
+    mask = cv2.bitwise_or(mask1, mask2)
+    target = cv2.bitwise_and(color_image, color_image, mask=mask)
+    return target
+
 def capture(isSavePic=False):
     pipeline = rs.pipeline()
 
@@ -23,7 +42,7 @@ def capture(isSavePic=False):
 
 
     # Capture 30 frames to give autoexposure, etc. a chance to settle
-    for i in range(15):
+    for i in range(30):
         pipeline.wait_for_frames()
 
     # Getting the depth sensor's depth scale (see rs-align example for explanation)
@@ -48,7 +67,7 @@ def capture(isSavePic=False):
     aligned_depth_median = None
     frames_list = []
     
-    for i in range(10):
+    for i in range(15):
         # Get frameset of color and depth
         frames = pipeline.wait_for_frames()
         # frames.get_depth_frame() is a 640x360 depth image
@@ -69,7 +88,8 @@ def capture(isSavePic=False):
     
 
     depth_image = aligned_depth_median
-    color_image = np.asanyarray(color_frame.get_data())
+    origin_color_image = np.asanyarray(color_frame.get_data())
+    color_image = filterColor2(origin_color_image)
     depth_image2 = 2**(-16) * depth_image
 #     print(color_image[15,15,:])
 #     print(depth_image[15,15])
@@ -81,6 +101,10 @@ def capture(isSavePic=False):
         PNG_DIR = os.path.join(ROOT_DIR, "logs")
         file_name = "color_{:%Y%m%dT%H%M%S}.png".format(datetime.datetime.now())
         pngFilePath = os.path.join(PNG_DIR, file_name)
+        
+
+        cv_image_origin = cv2.cvtColor(origin_color_image, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(pngFilePath.replace("color","color_origin"), cv_image_origin)
 
         cv_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
         cv2.imwrite(pngFilePath, cv_image)

@@ -97,15 +97,17 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
         mask = masks[:,:,i]
 
         points = atool.rs2DeprojectMask2Points(intrinsics, mask, depthImg, depth_scale)
+        logging.debug("points[0]: %s.", points[0])
         if len(points[0]) > 150:
             (x,y,z), radius = sphereFit.fit(points)
         else:
             logging.debug("the number of pixel of the apple is no more than 150...")
-            (x,y,z), radius = \
-                    ((np.mean(points[0]),\
-                     np.mean(points[1]),\
-                     np.mean(points[2])),\
-                     0.05)
+            continue
+            #(x,y,z), radius = \
+            #        ((np.mean(points[0]),\
+            #         np.mean(points[1]),\
+            #         np.mean(points[2])),\
+            #         0.05)
         # change the coordinates from camera to arms
         logging.debug("apple in camera system is at %s.", (x,y,z, radius))
 #         x,y,z,radius = cdc.projectCamera2Arm((x,y,z,radius))
@@ -135,7 +137,8 @@ def fit2(boxes, masks, depthImg, intrinsics, depth_scale=0.001, blackList=[], cu
 def isInRange(relative_point, current_point):
     logging.debug("current_point is at %s.", current_point)
     point = (current_point[0] + relative_point[0], \
-             current_point[1] + relative_point[1], \
+#              current_point[1] + relative_point[1], \
+             relative_point[1], \
              relative_point[2], \
             )
     logging.debug("pick point is at %s.", point)
@@ -148,7 +151,8 @@ meanDepth: [number_of_instances]
 maskArea: [number_of_instances]
 """
 def sortMasks(meanDepth, maskArea):
-    factor = np.divide(meanDepth, maskArea, dtype=float)
+#     factor = np.divide(meanDepth, maskArea, dtype=float)
+    factor = meanDepth
     return np.argsort(factor)
 
 ######################
